@@ -16,7 +16,7 @@ def amount_days(period):
 
 
 def get_total_count(period):
-    list_of_amount = []
+    list_of_amount = [] 
     utc_list = amount_days(period)
     for day in range(1,len(utc_list)):
         x = utc_list[day][2]
