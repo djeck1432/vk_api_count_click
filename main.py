@@ -10,14 +10,14 @@ load_dotenv()
 secret_token = os.getenv("VK_TOKEN")
 
 parser = argparse.ArgumentParser(
-    description='Описание что делает программа'
+    description='Рисует график упоминания Кока-кола в вконтакте за n дней'
 )
-parser.add_argument('number_of_days', help='Введите количество дней')
+parser.add_argument('number_of_days', help='Введите количество дней', type=int)
 args = parser.parse_args()
 
 
 
-def main(period):
+def get_dates(period):
     today = datetime.datetime.now()
     dates = []
     for i in range(1,period+1):
@@ -31,7 +31,7 @@ def main(period):
 
 def get_total_count(period):
     amount_of_clicks = []
-    data_in_utc = main(period)
+    data_in_utc = get_dates(period)
     for day,utc in data_in_utc:
         start_time = utc
         payload = {'q':'Coca-cola','start_time':start_time,'access_token':secret_token,'v':'5.103'}
@@ -40,11 +40,9 @@ def get_total_count(period):
         amount_of_clicks.append(response.json()['response']['total_count'])
     return amount_of_clicks
 
-
-print(get_total_count(int(args.number_of_days)))
-
-
-plt.bar(range(1,8),graph)
-plt.xlabel('Day')
-plt.ylabel('Count')
-plt.show()
+if __name__ == '__main__':
+    graph = get_total_count(args.number_of_days)
+    plt.bar(range(1,len(graph)+1),graph)
+    plt.xlabel('Day')
+    plt.ylabel('Count')
+    plt.show()
