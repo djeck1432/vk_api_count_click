@@ -1,9 +1,23 @@
+
+from dotenv import load_dotenv
+import os
 import requests
 import datetime
 import matplotlib.pyplot as plt
+import argparse
+
+load_dotenv()
+secret_token = os.getenv("VK_TOKEN")
+
+parser = argparse.ArgumentParser(
+    description='Описание что делает программа'
+)
+parser.add_argument('number_of_days', help='Введите количество дней')
+args = parser.parse_args()
 
 
-def amount_days(period):
+
+def main(period):
     today = datetime.datetime.now()
     dates = []
     for i in range(1,period+1):
@@ -17,16 +31,18 @@ def amount_days(period):
 
 def get_total_count(period):
     amount_of_clicks = []
-    data_in_utc = amount_days(period)
+    data_in_utc = main(period)
     for day,utc in data_in_utc:
         start_time = utc
-        payload = {'q':'Coca-cola','start_time':start_time,'access_token':'f87d9340f87d9340f87d93401af8104018ff87df87d9340a5bf91f22e578dd209437994','v':'5.103'}
+        payload = {'q':'Coca-cola','start_time':start_time,'access_token':secret_token,'v':'5.103'}
         url = 'https://api.vk.com/method/newsfeed.search'
         response = requests.post(url,data=payload)
         amount_of_clicks.append(response.json()['response']['total_count'])
     return amount_of_clicks
 
-graph = get_total_count(8)
+
+print(get_total_count(int(args.number_of_days)))
+
 
 plt.bar(range(1,8),graph)
 plt.xlabel('Day')
